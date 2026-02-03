@@ -1,0 +1,24 @@
+- name: Creates directory
+  file:
+    path: "/opt/monitoring"
+    state: directory
+
+- name: Copy configuration
+  copy:
+    src: "{{ playbook_dir }}/roles/monitoring/files/{{ item }}"
+    dest: "/opt/monitoring/{{ item }}"
+    mode: "0755"
+  loop:
+  - alertmanager.yml
+  - prometheus.yml
+  - rules.yml
+
+- name: Copy docker-compose file
+  copy:
+    src: "/opt/monitoring/docker-compose-monitoring.yml"
+    mode: "0644"
+
+- name: Start monitoring service
+  shell: docker compose -f "/opt/monitoring/docker-compose-monitoring.yml" up -d
+  args:
+    chdir: "/opt/monitoring"

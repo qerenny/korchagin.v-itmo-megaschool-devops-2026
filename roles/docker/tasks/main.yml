@@ -1,0 +1,61 @@
+---
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: deb [arch=arm64] https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+
+- name: Install Docker Engine
+  apt:
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add users to docker group
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop:
+    - developer1
+    - admin1
+    - "{{ lookup('env', 'USER') }}"
+
+- name: Configure Docker daemon (Nexus Proxy)
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "insecure-registries" : ["localhost:8082"],
+        "registry-mirrors": ["http://localhost:8082"],
+        "metrics-addr" : "0.0.0.0:9323",
+        "experimental" : true
+      }
+    mode: '0644'
+  notify: Restart Docker

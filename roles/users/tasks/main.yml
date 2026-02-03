@@ -1,0 +1,47 @@
+- name: Creating groups
+  group:
+    gid: "{{ item.gid }}"
+    name: "{{ item.name }}" 
+    state: present
+  loop:
+    - {name: developers, gid: 1001}
+    - {name: admins, gid: 1002}
+
+- name: Creating users
+  user:
+    name: "{{ item.name }}"
+    create_home: True
+    group: "{{ item.groups }}"
+    shell: "/bin/bash"
+    state: present
+  loop:
+    - { name: developer1, groups: developers }
+    - { name: admin1, groups: admins }
+
+# - name: Make users passwordless for sudo in group wheel
+#   lineinfile:
+#     path: /etc/sudoers
+#     state: present
+#     regexp: '^%admin'
+#     line: '%admin ALL=(ALL) NOPASSWD: ALL'
+#     validate: 'visudo -cf %s'
+
+# - name: Generate SSH key for the ansible user (local) if not exists
+#   delegate_to: localhost
+#   become: false
+#   user:
+#     name: "{{ lookup('env', 'USER') }}"
+#     generate_ssh_key: true
+#     ssh_key_bits: 2048
+#     ssh_key_file: .ssh/id_rsa
+#   run_once: true
+
+# - name: Set up authorized keys for users
+#   authorized_key:
+#     user: "{{ item }}"
+#     state: present
+#     key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+#   loop:
+#     - developer1
+#     - admin1
+

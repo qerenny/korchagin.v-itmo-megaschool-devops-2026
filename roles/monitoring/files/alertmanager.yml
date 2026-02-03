@@ -1,0 +1,11 @@
+route:
+  receiver: 'webhook'
+  group_wait: 30s
+  group_interval: 60s
+  repeat_interval: 15m
+
+receivers:
+  - name: "webhook"
+    webhook_configs: 
+    - url: 'http://localhost:5001'
+    

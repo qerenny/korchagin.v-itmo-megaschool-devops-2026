@@ -1,0 +1,10 @@
+- name: Install dependencies and configure vm and start nexus
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - users
+    - docker
+    - nexus
+  

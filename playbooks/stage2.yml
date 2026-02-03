@@ -1,0 +1,12 @@
+- name: Configure logging and monitoring
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - logging
+    - monitoring
+  
+
+
+  

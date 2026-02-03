@@ -1,0 +1,20 @@
+- name: Creates directory
+  file:
+    path: "/opt/logging"
+    state: directory
+
+- name: Copy configuration
+  copy:
+    src: "{{ playbook_dir }}/roles/logging/files/filebeat.yml"
+    dest: "/opt/logging/filebeat.yml"
+    mode: "0755"
+
+- name: Copy docker-compose file
+  copy:
+    src: "/opt/logging/docker-compose-logging.yml"
+    mode: "0644"
+
+- name: Start logging service
+  shell: docker compose -f "/opt/logging/docker-compose-logging.yml" up -d
+  args:
+    chdir: "/opt/logging"

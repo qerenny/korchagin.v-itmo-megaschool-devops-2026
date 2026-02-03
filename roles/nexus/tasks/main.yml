@@ -1,0 +1,16 @@
+- name: Creates directory
+  file:
+    path: "/opt/nexus/"
+    state: directory
+
+- name: Copy docker-compose
+  copy:
+    src: "/Users/qerenny/Documents/korchagin.v-itmo-megaschool-devops-2026/roles/nexus/files/docker-compose-nexus.yml"
+    dest: "opt/nexus/docker-compose-nexus.yml"
+    mode: "0644"
+
+- name: Start nexus service
+  shell: docker compose -f "/opt/nexus/docker-compose-nexus.yml" up -d
+  args:
+    chdir: "/opt/nexus"
+
